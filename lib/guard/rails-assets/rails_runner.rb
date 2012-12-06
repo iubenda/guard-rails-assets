@@ -44,7 +44,7 @@ module Guard
       rm_rf public_asset_path, :secure => true
     end
 
-    def precompile
+    def precompile(paths=[])
       config = ::Rails.application.config
       unless config.assets.enabled
         warn "Cannot precompile assets if sprockets is disabled. Enabling it."
@@ -63,9 +63,10 @@ module Guard
 
       env      = ::Rails.application.assets
       target   = File.join(::Rails.public_path, config.assets.prefix)
+
       compiler = Sprockets::StaticCompiler.new(env,
                                                target,
-                                               config.assets.precompile,
+                                               !paths.empty? && paths || config.assets.precompile,
                                                :manifest_path => config.assets.manifest,
                                                :digest => config.assets.digest,
                                                :manifest => config.assets.digest.nil?)
@@ -76,12 +77,12 @@ module Guard
     # Runs the asset pipeline compiler.
     #
     # @return [ Boolean ] Whether the compilation was successful or not
-    def compile_assets
+    def compile_assets(paths)
       self.class.boot_rails
       return false unless @@rails_booted
       begin
-        clean
-        precompile
+        clean if paths.empty?
+        precompile(paths)
         true
       rescue => e
         puts "An error occurred compiling assets: #{e}"

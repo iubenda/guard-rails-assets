@@ -25,12 +25,12 @@ module Guard
     end
 
     def run_on_change(paths=[])
-      compile_assets if run_for? :change
+      compile_assets(paths) if run_for? :change
     end
 
-    def compile_assets
+    def compile_assets(paths=[])
       puts "Compiling rails assets with #{runner.class.name}."
-      result = runner.compile_assets
+      result = runner.compile_assets(paths)
 
       if result
         Notifier::notify 'Assets compiled'

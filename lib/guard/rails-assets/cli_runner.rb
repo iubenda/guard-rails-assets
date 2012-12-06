@@ -6,7 +6,7 @@ module Guard
       @digest    = true if @digest.nil?
     end
 
-    def compile_assets
+    def compile_assets(paths=[])
       task = "assets:precompile"
       task += ":nondigest" unless @digest
       system "bundle exec rake assets:clean #{task} RAILS_ENV=#{@rails_env}"
